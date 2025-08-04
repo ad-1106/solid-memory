@@ -48,7 +48,7 @@ class Handler(FileSystemEventHandler):
             print(stream['message']['content'])
             response = stream['message']['content']
             first_word = response.split()[0]
-            writer.writerow([source_path,' ',first_word,response.replace(first_word,1)])
+            writer.writerow([source_path,' ',first_word,response.replace(first_word," ",1)])
 
 if __name__ == '__main__':
     watch = OnMyWatch()
