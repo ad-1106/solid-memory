@@ -419,8 +419,3 @@ if __name__ == "__main__":
     output_file_path = "criss_report_generated.tex"
     
     create_latex_document(csv_file_path, output_file_path)
-
-
-
-pdfl = pdflatex.PDFLaTeX.from_texfile('criss_report_generated.tex')
-pdf, log, completed_process = pdfl.create_pdf(keep_pdf_file=True, keep_log_file=True)
