@@ -1,198 +1,231 @@
-#import time module, Observer, FileSystemEventHandler
-import time
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-from ollama import chat, AsyncClient
-import csv
-import asyncio
 import os
-
-file = open("/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/solid-memory/data.csv",'w')
-writer = csv.writer(file)
+from ollama import chat 
+import csv
+csv_file = open("/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/Images/data.csv",'w')
+writer = csv.writer(csv_file)
 writer.writerow(['Path to image','location','object_identified','description'])
-file.close()
-class OnMyWatch:
-    # Set the directory on watch
-    watchDirectory = "/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/ProcessedImages"
+file_original = os.listdir("/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/ProcessedImages")
+files=[]
+description={}
+watchDirectory = "/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/ProcessedImages/"
+image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff']
+for file_name in file_original:
+    if any(file_name.lower().endswith(ext) for ext in image_extensions):
+        # Process the image file
+        files.append(file_name)
+for file in files:
+    parts = files.split("_")
+    x_coordinate = [p for p in parts if p.startswith("x=")][0].split("=")[1]
+    y_coordinate = [p for p in parts if p.startswith("y=")][0].split("=")[1]
+    content=""
+    file_path = watchDirectory + file
+    print(file_path)
+    stream = chat(
+            model='qwen2.5vl:7b-q8_0',
+            messages=[{'role': 'system', 'content': 
+                       """You are an image analysis AI specializing in detecting anomalies in Martian surface images.
+TASK:
+1. Examine the provided image and look for anything that might be unusual, artificial, or inconsistent with typical Martian terrain.
+2. Focus on:
+   - Artificial-looking objects or materials
+   - Unusual shapes, patterns, colors, or textures
+   - Structures, debris, or objects that appear manufactured
+   - Natural elements that appear altered, damaged, or out of place
+3. Avoid describing ordinary rocks, sand, dust, and common geological features unless they have unusual properties or patterns.
+4. If nothing seems unusual, respond with:
+   No clear anomaly detected.
+5. If anomalies are present:
+   - Write 1–2 sentences (30–50 words) describing them.
+   - Mention why they might be unusual in the Martian context.
+   - It’s acceptable to note that you are unsure, but avoid wild speculation.
 
-    def __init__(self):
-        self.observer = Observer()
+EXAMPLES:
+- Input: Image contains only rocks and dust.
+  Output: No clear anomaly detected.
 
-    def run(self):
-        event_handler = Handler()
-        self.observer.schedule(event_handler, self.watchDirectory, recursive = True)
-        self.observer.start()
-        try:
-            while True:
-                time.sleep(5)
-        except:
-            self.observer.stop()
-            print("Observer Stopped")
+- Input: Image shows a metallic fragment partly buried.
+  Output: A small, reflective metallic piece protrudes from the sand. Its smooth surfaces and sharp angles stand out from the irregular shapes of surrounding rocks.
 
-        self.observer.join()
-
-
-class Handler(FileSystemEventHandler):
-
-    @staticmethod
-    def on_any_event(event):
-        if event.is_directory:
-            return None
-        elif event.event_type == 'created':
-            source_path = event.src_path
-            print("file created and processing")
-            file = open("/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/Images/data.csv",'a')
-            writer = csv.writer(file)
-            async def chat():
-                    content = ""
-                    message = {'role': 'user', 'content': 'You are an intelligent assistant specialized in analyzing images from a Mars mission. Your task is to describe objects only if they are relevant anomalies or significant items related to the mission. Ignore and do not describe generic rocks, common geological formations, backgrounds, or anything that looks like ordinary terrain without unique features(DO NOT GENERATE ANY RESPONSE IN THIS CASE). Only generate a description when the object is unusual, scientifically interesting, or mission-relevant. generate a paragraph of 50 words that describes the object in view and state whether it is an item that is typical in a Mars environment. The first word should be what the object is, only the name of the object. If the name of the object contains multiple words, connect them with a hyphen. Do not use any punctuators as the first word. The first word should be the object that is detected in the image.', 'images': [source_path]}
-                    async for part in await AsyncClient().chat(model='qwen2.5vl:7b-q8_0', messages=[message], stream=True):
-                        reply+=part['message']['content']
-                    print(content)
-                    first_word = reply.split()[0]
-                    if not content or not content.strip():
-                        print(f"No meaningful response for {source_path}. Deleting image.")
-                        os.remove(source_path)
-                        return
-
-                    lower_content = content.lower()
-                    generic_phrases = [
+- Input: Image shows a rock with a perfect circular hole.
+  Output: A dark rock with a precise circular hole is visible. The regularity of the hole is uncommon in natural erosion patterns.
+  KEEP IN MIND THAT YOU NEED TO LOOK AT IT FROM A  MARS PERSPECTIVE.""", 'images': [file_path]}],
+            stream=True,
+        )
+    for chunk in stream:
+        print(chunk['message']['content'], end='', flush=True)
+        response = chunk['message']['content']
+        content+=response
+    first_word = content.split()[0]
+    if not content or not content.strip():
+        print(f"No meaningful response for {file_path}. transferring image.")
+    lower_content = content.lower
+    generic_phrases = [
                         "no anomaly", "nothing unusual", "ordinary terrain", "common rock",
                         "generic rock", "typical mars", "no significant object", "just rocks",
                         "empty scene", "nothing relevant"
                     ]
-                    if any(phrase in lower_content for phrase in generic_phrases):
-                        print(f"Generic/irrelevant description for {source_path}. Deleting image.")
-                        os.remove(source_path)
-                        return
-                    writer.writerow([source_path,' ',first_word,reply.replace(first_word,"",1)])
-                    file.close()
-            asyncio.run(chat())
+    if any(phrase in lower_content for phrase in generic_phrases):
+        print(f"Generic/irrelevant description for {file_path}. Deleting image.")
+    else: 
+      writer.writerow([file_path,x_coordinate,y_coordinate,first_word,content])
 import csv
+
+# Initialize data structures
 files = []
-description={}
-file = open("/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/solid-memory/data.csv",'r')
-reader = csv.reader(file)
-next(reader)
-for row in reader:
-        print(row[0])
-        file_name = row[0]
-        files.append(file_name)
-        description[row[0]] = row[3]
-html_content = f"""<!DOCTYPE html>
+description = {}
+x_coordinate = {}
+y_coordinate = {}
+timestamps = {}
+
+# Read data from the CSV file
+try:
+    with open("/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/solid-memory/data.csv", 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip the header row
+        for row in reader:
+            if len(row) >= 5:
+                file_name = row[0]
+                files.append(file_name)
+                description[row[0]] = row[3]
+                x_coordinate[row[0]] = row[1]
+                y_coordinate[row[0]] = row[2]
+
+            else:
+                print(f"Skipping row due to missing data: {row}")
+
+except FileNotFoundError:
+    print("Error: The CSV file was not found. Please check the path.")
+    exit()
+except Exception as e:
+    print(f"An unexpected error occurred: {e}")
+    exit()
+
+# Start building the main HTML content string
+full_report_content = ""
+
+# Loop through each file to generate its report page content
+for file_name in files:
+    desc_val = description.get(file_name, 'No description available')
+    lat_val = x_coordinate.get(file_name, 'N/A')
+    lon_val = y_coordinate.get(file_name, 'N/A')
+    ts_val = timestamps.get(file_name, 'N/A')
+
+    # Generate a single-page report section for the current image
+    page_html = f"""
+  <main class="page" role="document">
+    <header>
+      <div class="mark" aria-hidden="true">
+        <img src="/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/solid-memory/logo.jpg" alt="Organisation Logo" />
+      </div>
+      <div class="hgroup">
+        <h1>Detected Objects</h1>
+        <div class="meta">
+          Date: <span id="report-date">2025-08-26</span> • Prepared by: <span id="prepared-by">CRISS Robotics</span>
+        </div>
+      </div>
+    </header>
+
+    <section style="margin-top:8px">
+      <div class="card">
+        <div class="card-h">1. Map Location</div>
+        <div class="card-b">
+          <figure class="figure" aria-label="Map showing the detected object's location"></figure>
+          <div class="meta">Map showing the detected object</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <div class="card-h">2. Image of Detected Object</div>
+        <div class="card-b">
+          <figure>
+            <img id="object-image" src="{file_name}" alt="Photograph of the detected object"/>
+            <figcaption class="meta">Detected Object</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <div class="card-h">3. Location Details</div>
+        <div class="card-b">
+          <div class="kv">
+            <div class="k">Latitude</div><div id="lat">{lat_val}</div>
+            <div class="k">Longitude</div><div id="lon">{lon_val}</div>
+            <div class="k">Timestamp</div><div id="capture-ts">{ts_val}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <div class="card-h">4. Description</div>
+        <div class="card-b">
+          <p class="desc" id="description">
+            {desc_val}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      This document is intended for ERC. Unauthorised distribution is prohibited. © <span id="year">2025</span> CRISS Robotics.
+    </footer>
+  </main>
+"""
+    full_report_content += page_html
+
+# Now, put all the generated pages into one final HTML document
+final_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Processing Results</title>
-    <style>
-        body {{
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #eef2f3, #dfe9f3);
-            color: #333;
-        }}
-        h1 {{
-            text-align: center;
-            color: #2c3e50;
-            font-size: 2.2em;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-        }}
-        .stats {{
-            max-width: 500px;
-            margin: 0 auto 25px auto;
-            padding: 15px;
-            background: #ffffffcc;
-            border-radius: 12px;
-            text-align: center;
-            font-size: 1.1em;
-            font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }}
-        .gallery {{
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            padding: 10px;
-        }}
-        .image-card {{
-            background: white;
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }}
-        .image-card:hover {{
-            transform: translateY(-6px) scale(1.02);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }}
-        .filename {{
-            padding: 12px;
-            font-weight: bold;
-            background: #f7f9fa;
-            font-size: 0.95em;
-            color: #4a4a4a;
-            border-bottom: 1px solid #ececec;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }}
-        .image-card img {{
-            width: 100%;
-            height: auto;
-            display: block;
-        }}
-        .description {{
-            padding: 12px;
-            font-size: 0.9em;
-            color: #555;
-            background: #fafbfc;
-            border-top: 1px solid #f0f0f0;
-            min-height: 50px;
-        }}
-        @media (max-width: 600px) {{
-            body {{
-                padding: 10px;
-            }}
-            h1 {{
-                font-size: 1.6em;
-            }}
-        }}
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Detected Objects – Full Report</title>
+  <style>
+    :root{{
+      --ink:#111111;--muted:#4b5563;--line:#e5e7eb;--brand:#0f172a;--accent:#1f2937;--bg:#ffffff;
+    }}
+    body{{margin:0;font-family: "Times New Roman", Times, Georgia, serif; color:var(--ink); background:var(--bg)}}
+    .page{{width:auto; min-height:297mm; margin:10mm 20mm; padding:20mm; box-sizing:border-box; background:#fff; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:flex-start}}
+    header{{display:flex; gap:16px; align-items:center; padding-bottom:12px; border-bottom:2px solid var(--brand)}}
+    .mark{{width:60px;height:60px; border-radius:12px; overflow:hidden; display:grid; place-items:center; background:#fff; border:1px solid var(--brand)}}
+    .mark img{{width:100%; height:100%; object-fit:contain}}
+    .hgroup{{flex:1}}
+    h1{{margin:0; font-size:20px; letter-spacing:.2px}}
+    h2{{margin:0 0 4px 0; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--accent)}}
+    .meta{{margin-top:4px; color:var(--muted); font-size:12px}}
+    .card{{border:1px solid var(--line); border-radius:8px; background:#fff; margin-top:10px}}
+    .card > .card-h{{padding:6px 10px; border-bottom:1px solid var(--line); background:#f9fafb; font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:11px; color:#1f2937}}
+    .card > .card-b{{padding:10px; font-size:13px}}
+    figure{{margin:0}}
+    figure{{border:1px solid var(--line); background:#f8fafc; display:grid; place-items:center;}}
+    figure img{{display:block; width:60vw;}}
+    .kv{{display:grid; grid-template-columns: 90px 1fr; gap:4px 8px; font-size:13px}}
+    .kv div{{padding:4px 0; border-bottom:1px dotted #e5e7eb}}
+    .kv .k{{color:var(--muted)}}
+    .desc{{font-size:13px; line-height:1.4; text-align:justify}}
+    footer{{margin-top:auto; padding-top:6px; border-top:1px solid var(--line); color:var(--muted); font-size:10px; text-align:center}}
+    @media print{{
+      .page{{border:none; width:100%; min-height:100vh; padding:10mm; break-after: page;}}
+      .card{{break-inside:avoid}}
+      body{{background:#fff; margin:0}}
+    }}
+  </style>
 </head>
 <body>
-    <h1>Image Processing Results</h1>
-    <div class="stats">
-        📊 Total images processed: {len(files)}
-    </div>
-    <div class="gallery">
-"""
-
-# Add image cards
-for file_name in files:
-    html_content += f"""
-        <div class="image-card">
-            <img src="{file_name}" alt="{file_name}">
-            <div class="description">{description.get(file_name, 'No description available')}</div>
-        </div>
-    """
-
-# Close HTML
-html_content += """
-    </div>
+  {full_report_content}
 </body>
-</html>
-"""
+</html>"""
 
-# Save HTML file
+# Define the output file path
 html_file_path = '/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/Images/results.html'
+
+# Write the final HTML content to a single file
 with open(html_file_path, 'w', encoding='utf-8') as f:
-    f.write(html_content)
+    f.write(final_html)
 
 print(f"\nHTML report generated at: {html_file_path}")
-
-if __name__ == '__main__':
-    watch = OnMyWatch()
-    watch.run()

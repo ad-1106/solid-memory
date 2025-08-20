@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Detected Objects – Full Report</title>
+    <style>
+        :root {
+
+            --ink: #111111;
+            --muted: #4b5563;
+            --line: #e5e7eb;
+            --brand: #0f172a;
+            --accent: #1f2937;
+            --bg: #ffffff;
+
+        }
+
+        body {
+
+            margin: 0;
+            font-family: "Times New Roman", Times, Georgia, serif;
+            color: var(--ink);
+            background: var(--bg)
+        }
+
+        .page {
+
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 20mm;
+            box-sizing: border-box;
+            background: #fff;
+            border: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start
+        }
+
+
+        header {
+
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--brand)
+        }
+
+        .mark {
+
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            background: #fff;
+            border: 1px solid var(--brand)
+        }
+
+        .mark img {
+
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain
+        }
+
+        .hgroup {
+
+            flex: 1
+        }
+
+        h1 {
+
+            margin: 0;
+            font-size: 20px;
+            letter-spacing: .2px
+        }
+
+        h2 {
+
+            margin: 0 0 4px 0;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--accent)
+        }
+
+        .meta {
+
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .card {
+
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+            margin-top: 10px
+        }
+
+        .card>.card-h {
+
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--line);
+            background: #f9fafb;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            font-size: 11px;
+            color: #1f2937
+        }
+
+        .card>.card-b {
+
+            padding: 10px;
+            font-size: 13px
+        }
+
+        figure {
+
+            margin: 0
+        }
+
+        .figure {
+            border: 1px solid var(--line);
+            background: #f8fafc;
+            display: grid;
+            place-items: center;
+            min-height: 120px
+        }
+
+        .figure img {
+
+            display: block;
+            max-width: 100%;
+            height: auto
+        }
+
+        .kv {
+
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            gap: 4px 8px;
+            font-size: 13px
+        }
+
+        .kv div {
+
+            padding: 4px 0;
+            border-bottom: 1px dotted #e5e7eb
+        }
+
+        .kv .k {
+
+            color: var(--muted)
+        }
+
+        .desc {
+
+            font-size: 13px;
+            line-height: 1.4;
+            text-align: justify
+        }
+
+        footer {
+
+            margin-top: auto;
+            padding-top: 6px;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 10px;
+            text-align: center
+        }
+
+        @media print {
+
+            .page {
+
+                border: none;
+                width: 100%;
+                min-height: 100vh;
+                padding: 10mm;
+                break-after: page;
+            }
+
+
+            .card {
+
+                break-inside: avoid
+            }
+
+            body {
+
+                background: #fff;
+                margin: 0
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    {full_report_content}
+</body>
+
+</html>

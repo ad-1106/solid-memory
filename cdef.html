@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Detected Object – Formal Report</title>
+  <style>
+    :root {
+      --ink: #111111;
+      --muted: #4b5563;
+      --brand: #0f172a;
+      --accent: #1f2937;
+      --bg: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Times New Roman", Times, Georgia, serif;
+      color: var(--ink);
+      background: var(--bg)
+    }
+
+    .cover {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 60px 40px;
+      border: 2px solid var(--brand);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, .08);
+      text-align: center;
+      border-radius: 12px
+    }
+
+    .cover h1 {
+      font-size: 36px;
+      margin-bottom: 12px
+    }
+
+    .cover h2 {
+      font-size: 18px;
+      margin-bottom: 28px;
+      color: var(--accent)
+    }
+
+    .cover img {
+      max-width: 100px;
+      margin-bottom: 20px
+    }
+
+    .meta {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    @media print {
+      body {
+        background: #fff
+      }
+
+      .cover {
+        border: none;
+        box-shadow: none;
+        margin: 0;
+        border-radius: 0;
+        width: 100%
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Cover Page Only -->
+  <section class="cover">
+    <img src="logo.jpg" alt="Organisation Logo" />
+    <h1>Detected Object – Formal Report</h1>
+    <h2>European Rover Challenge 2025</h2>
+    <p class="meta">Prepared by: <span id="prepared-by-cover">Team / Analyst</span></p>
+    <p class="meta">Date: <span id="report-date-cover">YYYY-MM-DD</span></p>
+  </section>
+
+  <script>
+    (function () {
+      const now = new Date();
+      const yyyyMmDd = now.toISOString().slice(0, 10);
+      const el = (id, val) => { const n = document.getElementById(id); if (n && n.textContent === 'YYYY-MM-DD') n.textContent = val; };
+      el('report-date-cover', yyyyMmDd);
+    })();
+  </script>
+</body>
+
+</html>
