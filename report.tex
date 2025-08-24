@@ -1,0 +1,102 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{top=2cm, bottom=2cm, left=2cm, right=2cm}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{array}
+\usepackage{booktabs}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+%---------------------------
+% Cover Page
+%---------------------------
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\Huge\bfseries ERC 2025 \par}
+    %% Logo
+    \vspace*{2cm}
+    \includegraphics[width=0.25\textwidth]{logo.png}\par\vspace{2cm}
+    %% Main Title
+    {\Huge\bfseries Report on detected landmarks \par}
+    \vspace{1.5cm}
+    %% Subtitle (optional)
+    \vspace{2cm}
+    %% Author and details
+    {\large
+        CRISS Robotics \par
+        BITS Pilani,Pilani \par
+         \par
+    }
+    \vfill
+    %% Date
+    {\large 26th August 2025\par}
+\end{titlepage}
+
+\clearpage
+
+    \section*{Object Details}
+    \textbf{Object Name:} Navigational ArUco Marker with Support Structure \newline
+    \textbf{Classification:} Non Anomaly \newline
+    \textbf{X Coordinate:} 21.530 \newline
+    \textbf{Y Coordinate:} 26.182 \newline
+    \textbf{Coordinate System:} Relative to Initial Position \newline
+    \textbf{Camera:} Back Camera\newline
+
+    % Images side-by-side
+    \begin{figure}[H]
+        \centering
+        \begin{tabular}{@{}c@{\hspace{0.5cm}}c@{}}
+            \includegraphics[width=0.45\linewidth]{/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/ProcessedImages/b=0008_a=243000_x=21.530_y=26.182_theta=-2.251_.png} &
+            \includegraphics[width=0.45\linewidth]{/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/ProcessedImages/b=0008_a=243000_x=21.530_y=26.182_theta=-2.251_.png} \\
+            \textbf{(a) Location Map} & \textbf{(b) Object Photograph}
+        \end{tabular}
+        \caption{Images of the map and the object}
+        \label{fig:side_by_side}
+    \end{figure}
+
+    % Object description section
+    \section*{Object Description}
+    \textbf{Physcial Description:} A distinct, manufactured object is visible in the background, comprising a white rectangular panel with a clear black border and an intricate internal black geometric pattern. This panel is securely mounted on a metallic, light-colored stand, which features a robust cross-shaped base for stability. The entire assembly stands upright on the marsyard terrain, indicating its intentional placement within this controlled environment. The object appears to be a physical fiducial marker, designed for optical detection and data interpretation, rather than a natural geological formation or a transient lighting effect, exhibiting clear material construction. \newline\newline
+    \textbf{Reason For Classification:} This object is classified as an Electronic Tool, specifically a navigational aid, which is a defined landmark in the mission context. Its purpose within a marsyard environment is to provide precise reference points for autonomous rover operations. The ArUco marker on the panel functions as a visual beacon, allowing the rover's perception systems to accurately determine its position and orientation. The supporting structure, while mechanical, is integral to the marker's function, enabling its stable deployment and visibility as a critical component of the electronic navigation system. This clearly distinguishes it from natural terrain features. \newline\newline
+    \textbf{Relevance to the mission:} The presence of this ArUco marker assembly offers significant navigation value and reference utility for the rover mission. It serves as a crucial fiducial point, essential for calibration, localization, and mapping within the marsyard. By detecting and processing these markers, the rover can precisely track its movements, refine its odometry, and build accurate environmental maps. This capability is vital for mission success, allowing for repeatable experiments, safe traversal, and targeted data collection, mitigating navigational drift, and ensuring the rover can consistently return to predefined areas for specific tasks or recharging cycles. 
+    
+    \clearpage
+    
+    \section*{Object Details}
+    \textbf{Object Name:} Support Structure with Base \newline
+    \textbf{Classification:} Non Anomaly \newline
+    \textbf{X Coordinate:} 21.530 \newline
+    \textbf{Y Coordinate:} 26.182 \newline
+    \textbf{Coordinate System:} Relative to Initial Position \newline
+    \textbf{Camera:} Back Camera\newline
+
+    % Images side-by-side
+    \begin{figure}[H]
+        \centering
+        \begin{tabular}{@{}c@{\hspace{0.5cm}}c@{}}
+            \includegraphics[width=0.45\linewidth]{/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/ProcessedImages/b=0012_a=291600_x=21.530_y=26.182_theta=-2.251_.png} &
+            \includegraphics[width=0.45\linewidth]{/Users/todi/Documents/Code/Pythonprojects/CRISS/Probation/ProcessedImages/b=0012_a=291600_x=21.530_y=26.182_theta=-2.251_.png} \\
+            \textbf{(a) Location Map} & \textbf{(b) Object Photograph}
+        \end{tabular}
+        \caption{Images of the map and the object}
+        \label{fig:side_by_side}
+    \end{figure}
+
+    % Object description section
+    \section*{Object Description}
+    \textbf{Physcial Description:} The object detected is a distinct, multi-legged support structure with a horizontal base, firmly positioned on the marsyard terrain. It exhibits a uniform light grey or white coloration, suggesting a manufactured material such as plastic or painted metal, designed for stability. The structure is situated in the middle ground, appearing to anchor or elevate another object (which is too blurry for definitive identification) above the ground. Its components are clearly three-dimensional, comprising vertical uprights and a foundational cross-piece, demonstrating a deliberate, engineered design rather than a natural formation. This robust construction provides a stable platform in the simulated Martian environment. \newline\newline
+    \textbf{Reason For Classification:} This object is classified as a "Building Structure" under the mission's landmark criteria. Its purpose is evidently to provide structural support, elevating and stabilizing equipment or signage within the marsyard. The clear evidence of assembly from distinct components, such as the vertical posts and the ground-level cross-member, signifies human construction and engineering. It is not a natural geological feature but an intentionally placed piece of infrastructure, designed to serve a specific functional role in the test environment, likely for holding sensors, cameras, or observational targets at a fixed height. \newline\newline
+    \textbf{Relevance to the mission:} As a "Building Structure," this support stand offers significant navigational value and reference utility for autonomous rover operations. Its fixed position, distinct manufactured form, and stable presence make it an excellent fiducial point. Rovers can use its location and orientation for localization, path planning, and re-acquisition of known positions. Its enduring nature as a constructed element ensures its reliability as a navigational beacon, assisting in precise movement and data correlation across multiple traverses. The structure can serve as a critical reference for mapping and maintaining positional awareness within the marsyard. 
+    
+    \clearpage
+    \end{document}
